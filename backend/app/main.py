@@ -71,13 +71,13 @@ async def health_check():
 
 
 # Register routers
-from app.routers import content, search
+from app.routers import content, search, auth
 
+app.include_router(auth.router)
 app.include_router(content.router)
 app.include_router(search.router)
 
 # TODO: Register additional routers when implemented
-# from app.routers import export, planning, auth
+# from app.routers import export, planning
 # app.include_router(export.router)
 # app.include_router(planning.router)
-# app.include_router(auth.router)

@@ -56,6 +56,12 @@ class UserResponse(UserBase):
     model_config = {"from_attributes": True}
 
 
+class UserInDB(UserResponse):
+    """User model with password hash (for internal use only)."""
+
+    password_hash: str
+
+
 class Token(BaseModel):
     """JWT token response model."""
 
