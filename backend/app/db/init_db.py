@@ -63,47 +63,25 @@ def create_content_index_db():
     """)
 
     # Create FTS5 virtual table for full-text search
+    # Note: This is a standalone FTS table, not linked to content_items
+    # Index is managed manually by search_service.py
     cursor.execute("""
         CREATE VIRTUAL TABLE IF NOT EXISTS content_fts USING fts5(
             id UNINDEXED,
             title,
             description,
-            body_preview,
-            tags,
-            content='content_items',
-            content_rowid='rowid'
+            body,
+            tags
         )
     """)
 
-    # Create triggers to keep FTS index synchronized
-    cursor.execute("""
-        CREATE TRIGGER IF NOT EXISTS content_ai AFTER INSERT ON content_items BEGIN
-            INSERT INTO content_fts(rowid, id, title, description, body_preview, tags)
-            VALUES (new.rowid, new.id, new.title, new.description, new.body_preview, new.tags_json);
-        END
-    """)
-
-    cursor.execute("""
-        CREATE TRIGGER IF NOT EXISTS content_au AFTER UPDATE ON content_items BEGIN
-            UPDATE content_fts
-            SET title = new.title,
-                description = new.description,
-                body_preview = new.body_preview,
-                tags = new.tags_json
-            WHERE rowid = new.rowid;
-        END
-    """)
-
-    cursor.execute("""
-        CREATE TRIGGER IF NOT EXISTS content_ad AFTER DELETE ON content_items BEGIN
-            DELETE FROM content_fts WHERE rowid = old.rowid;
-        END
-    """)
+    # Note: FTS index is managed manually by search_service.py
+    # Triggers are not used to avoid complexity with body content syncing
 
     conn.commit()
     conn.close()
 
-    print(f"✓ Content index database created at {db_file}")
+    print(f"[OK] Content index database created at {db_file}")
 
 
 def create_users_db():
@@ -143,7 +121,7 @@ def create_users_db():
     conn.commit()
     conn.close()
 
-    print(f"✓ Users database created at {db_file}")
+    print(f"[OK] Users database created at {db_file}")
 
 
 async def init_database():
@@ -153,7 +131,7 @@ async def init_database():
     """
     create_content_index_db()
     create_users_db()
-    print("✓ All databases initialized successfully")
+    print("[OK] All databases initialized successfully")
 
 
 if __name__ == "__main__":

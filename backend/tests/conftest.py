@@ -38,15 +38,20 @@ def test_settings(temp_dir: Path) -> Settings:
 
 
 @pytest.fixture
-def client(test_settings: Settings) -> Generator[TestClient, None, None]:
+def client(test_settings: Settings, monkeypatch) -> Generator[TestClient, None, None]:
     """Create a test client for FastAPI application."""
-    # Override settings for tests
-    app.dependency_overrides[settings] = lambda: test_settings
+    # Override settings module for tests
+    monkeypatch.setattr("app.config.settings", test_settings)
+    monkeypatch.setattr("app.services.markdown_service.settings", test_settings)
+    monkeypatch.setattr("app.services.search_service.settings", test_settings)
+
+    # Initialize test database
+    from app.db.init_db import create_content_index_db, create_users_db
+    create_content_index_db()
+    create_users_db()
 
     with TestClient(app) as test_client:
         yield test_client
-
-    app.dependency_overrides.clear()
 
 
 @pytest.fixture
