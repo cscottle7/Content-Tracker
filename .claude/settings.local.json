@@ -27,7 +27,9 @@
       "Bash(claude mcp add:*)",
       "Bash(mkdir:*)",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nPhase 1: Project Foundation & Development Environment\n\nInitialize Content Tracking System with complete foundation:\n\nBackend (FastAPI):\n- Application structure with main.py, config.py\n- Pydantic models for content and users\n- Database initialization with SQLite + FTS5\n- Docker configuration with multi-stage build\n- Testing infrastructure with pytest\n- Requirements.txt with all dependencies\n\nFrontend (Next.js 14 + TypeScript):\n- App Router structure with layout and home page\n- TypeScript configuration with strict mode\n- Tailwind CSS with shadcn/ui setup\n- API client with typed endpoints\n- Utility functions and type definitions\n- Docker configuration for containerization\n\nInfrastructure:\n- Docker Compose orchestration for both services\n- Shared volumes for content_library and data\n- Environment configuration templates\n- Complete directory structure per CLAUDE.md\n\nDocumentation:\n- SETUP.md with installation instructions\n- DEVELOPMENT.md with developer guide\n- README.md with project overview\n- .env.example with all configuration options\n\nTesting:\n- Backend: pytest configuration with fixtures\n- Frontend: Jest configuration placeholder\n- Test coverage reporting setup\n\nGenerated with Claude Code\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
