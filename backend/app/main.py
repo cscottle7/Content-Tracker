@@ -70,10 +70,14 @@ async def health_check():
     }
 
 
-# TODO: Register routers when implemented
-# from app.routers import content, search, export, planning, auth
-# app.include_router(content.router, prefix="/api/content", tags=["content"])
-# app.include_router(search.router, prefix="/api/search", tags=["search"])
-# app.include_router(export.router, prefix="/api/export", tags=["export"])
-# app.include_router(planning.router, prefix="/api/planning", tags=["planning"])
-# app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+# Register routers
+from app.routers import content, search
+
+app.include_router(content.router)
+app.include_router(search.router)
+
+# TODO: Register additional routers when implemented
+# from app.routers import export, planning, auth
+# app.include_router(export.router)
+# app.include_router(planning.router)
+# app.include_router(auth.router)

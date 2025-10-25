@@ -40,41 +40,49 @@ export const api = {
   // Health check
   health: () => apiFetch<{ status: string }>("/health"),
 
-  // Content endpoints (to be implemented)
+  // Content endpoints
   content: {
-    list: async (params?: {
-      page?: number
-      pageSize?: number
-      contentType?: string
-      status?: string
-    }) => {
+    list: async (filters?: any, page = 1, perPage = 50) => {
       const queryParams = new URLSearchParams()
-      if (params?.page) queryParams.set("page", params.page.toString())
-      if (params?.pageSize)
-        queryParams.set("page_size", params.pageSize.toString())
-      if (params?.contentType)
-        queryParams.set("content_type", params.contentType)
-      if (params?.status) queryParams.set("status", params.status)
+      queryParams.set("page", page.toString())
+      queryParams.set("per_page", perPage.toString())
 
-      return apiFetch<any>(`/api/content?${queryParams}`)
+      // Add all filter parameters
+      if (filters) {
+        Object.keys(filters).forEach((key) => {
+          if (filters[key]) {
+            queryParams.set(key, filters[key])
+          }
+        })
+      }
+
+      return apiFetch<{
+        items: any[]
+        pagination: {
+          page: number
+          per_page: number
+          total: number
+          pages: number
+        }
+      }>(`/content?${queryParams}`)
     },
 
-    get: (id: string) => apiFetch<any>(`/api/content/${id}`),
+    get: (id: string) => apiFetch<any>(`/content/${id}`),
 
     create: (data: any) =>
-      apiFetch<any>("/api/content", {
+      apiFetch<any>("/content", {
         method: "POST",
         body: JSON.stringify(data),
       }),
 
     update: (id: string, data: any) =>
-      apiFetch<any>(`/api/content/${id}`, {
+      apiFetch<any>(`/content/${id}`, {
         method: "PUT",
         body: JSON.stringify(data),
       }),
 
     delete: (id: string) =>
-      apiFetch<void>(`/api/content/${id}`, {
+      apiFetch<void>(`/content/${id}`, {
         method: "DELETE",
       }),
   },
