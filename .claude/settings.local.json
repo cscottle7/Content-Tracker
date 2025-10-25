@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Read(//c/Users/cscot/.claude/agents/**)",
+      "Bash(for file in C:/Users/cscot/.claude/agents/*.md)",
+      "Bash(do grep -q \"^model:\" \"$file\")",
+      "Bash(done)",
+      "Bash(powershell -Command \".\\Update-ClaudeAgents.ps1 -Action Validate\")",
+      "Bash(powershell -Command \".\\Update-ClaudeAgents.ps1 -Action Tier2\")",
+      "Bash(powershell -Command \".\\Update-ClaudeAgents.ps1 -Action Tier2 -DryRun\")",
+      "Bash(powershell -Command \".\\Update-ClaudeAgents.ps1 -Action All -DryRun\")",
+      "Bash(powershell -ExecutionPolicy Bypass -File \".\\Fix-RemainingAgents.ps1\")",
+      "Bash(tree -L 3 -a)",
+      "WebFetch(domain:www.anthropic.com)",
+      "Bash(powershell -Command \"Get-Content ''C:\\Users\\cscot\\.claude\\agents\\threat-modeler.md'' | Select-String -Pattern ''^model:'' -Context 0,2\")",
+      "Bash(powershell -Command \"if (Test-Path ''C:\\Users\\cscot\\.claude\\agents\\design-system-reviewer.md'') { Get-Content ''C:\\Users\\cscot\\.claude\\agents\\design-system-reviewer.md'' | Select-String -Pattern ''^model:'' -Context 0,2 } else { Write-Output ''File not found'' }\")",
+      "Bash(powershell -Command \"if (Test-Path ''C:\\Users\\cscot\\.claude\\agents\\research-strategist.md'') { Get-Content ''C:\\Users\\cscot\\.claude\\agents\\research-strategist.md'' | Select-String -Pattern ''^model:|^name:|^description:'' } else { Write-Output ''File not found'' }\")",
+      "Bash(powershell -Command \"if (Test-Path ''.claude\\skills\\foundation'') { Get-ChildItem ''.claude\\skills\\foundation'' -Directory | Select-Object Name } else { Write-Output ''Skills foundation directory not found'' }\")",
+      "Bash(powershell -Command \"if (Test-Path ''.claude\\skills'') { Get-ChildItem ''.claude\\skills'' -Recurse -Filter ''*.md'' | Select-Object FullName } else { Write-Output ''Skills directory not found'' }\")",
+      "Bash(powershell -Command \"Get-ChildItem ''.claude\\skills'' -Recurse | Format-Table Name, PSIsContainer, FullName\")",
+      "Bash(powershell:*)",
+      "Bash(cat:*)",
+      "Bash(/bashes)",
+      "Bash(npm install:*)",
+      "Bash(npx:*)",
+      "Bash(claude mcp add:*)",
+      "Bash(mkdir:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: content-tracking-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./content_library:/app/content_library
+      - ./data:/app/data
+      - ./exports:/app/exports
+    environment:
+      - PYTHONUNBUFFERED=1
+      - CONTENT_LIBRARY_PATH=/app/content_library
+      - DATABASE_URL=sqlite:///app/data/content_index.db
+      - USERS_DATABASE_URL=sqlite:///app/data/users.db
+    env_file:
+      - .env
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - content-tracking-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: content-tracking-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    env_file:
+      - .env
+    command: npm run dev
+    depends_on:
+      - backend
+    networks:
+      - content-tracking-network
+
+networks:
+  content-tracking-network:
+    driver: bridge
+
+volumes:
+  node_modules:
+  next_cache:
