@@ -11,6 +11,7 @@ export interface ContentItem {
   status: string
   description?: string
   author?: string
+  client?: string
   url?: string
   publish_date?: string
   created_date: string
@@ -29,6 +30,7 @@ export interface ContentListItem {
   status: string
   description?: string
   author?: string
+  client?: string
   created_date: string
   updated_date: string
   categories: string[]
@@ -50,6 +52,7 @@ export interface ContentCreate {
   status?: string
   description?: string
   author?: string
+  client?: string
   url?: string
   publish_date?: string
   categories?: string[]
@@ -64,6 +67,7 @@ export interface ContentUpdate {
   status?: string
   description?: string
   author?: string
+  client?: string
   url?: string
   publish_date?: string
   categories?: string[]
@@ -76,11 +80,19 @@ export interface ContentFilter {
   content_type?: string
   status?: string
   author?: string
+  client?: string
   category?: string
   tag?: string
   start_date?: string
   end_date?: string
   search_query?: string
+}
+
+export interface FilterOptions {
+  content_types?: string[]
+  statuses?: string[]
+  authors?: string[]
+  clients?: string[]
 }
 
 export interface User {

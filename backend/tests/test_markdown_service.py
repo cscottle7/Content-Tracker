@@ -196,3 +196,54 @@ def test_read_file_without_frontmatter(tmp_path):
     data = read_content_file(str(file_path))
     assert 'body' in data
     assert "Just Content" in data['body']
+
+
+@pytest.mark.asyncio
+async def test_create_content_with_client(mock_settings):
+    """Test creating content with client field."""
+    content_data = ContentCreate(
+        title="Client Content",
+        content_type="blog",
+        client="TestClient",
+        body="Content for TestClient"
+    )
+
+    created = await create_content_item(content_data)
+    assert created.client == "TestClient"
+
+    # Verify it can be retrieved
+    retrieved = await get_content_item(created.id)
+    assert retrieved is not None
+    assert retrieved.client == "TestClient"
+
+
+@pytest.mark.asyncio
+async def test_update_client_field(mock_settings):
+    """Test updating the client field."""
+    created = await create_content_item(ContentCreate(
+        title="Original Content",
+        content_type="blog",
+        client="OriginalClient",
+        body="Test content"
+    ))
+
+    # Update client
+    updates = ContentUpdate(client="UpdatedClient")
+    updated = await update_content_item(created.id, updates)
+
+    assert updated is not None
+    assert updated.client == "UpdatedClient"
+    assert updated.title == "Original Content"  # Other fields unchanged
+
+
+@pytest.mark.asyncio
+async def test_create_content_without_client(mock_settings):
+    """Test creating content without client field (should be None)."""
+    content_data = ContentCreate(
+        title="No Client Content",
+        content_type="blog",
+        body="Content without client"
+    )
+
+    created = await create_content_item(content_data)
+    assert created.client is None

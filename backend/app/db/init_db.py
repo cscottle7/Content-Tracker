@@ -31,6 +31,7 @@ def create_content_index_db():
             updated_date DATE,
             publish_date DATE,
             author TEXT,
+            client TEXT,
             url TEXT,
             description TEXT,
             categories_json TEXT,
@@ -60,6 +61,11 @@ def create_content_index_db():
     cursor.execute("""
         CREATE INDEX IF NOT EXISTS idx_publish_date
         ON content_items(publish_date)
+    """)
+
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_client
+        ON content_items(client)
     """)
 
     # Create FTS5 virtual table for full-text search

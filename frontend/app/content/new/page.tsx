@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { api } from "@/lib/api"
 import { Button } from "@/components/ui/button"
@@ -11,7 +11,22 @@ import { Textarea } from "@/components/ui/textarea"
 export default function NewContentPage() {
   const [creating, setCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [clients, setClients] = useState<string[]>([])
   const router = useRouter()
+
+  useEffect(() => {
+    // Fetch available clients for dropdown
+    async function fetchClients() {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/search/filters`)
+        const data = await response.json()
+        setClients(data.clients || [])
+      } catch (err) {
+        console.error("Failed to fetch clients:", err)
+      }
+    }
+    fetchClients()
+  }, [])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -25,6 +40,7 @@ export default function NewContentPage() {
       status: formData.get("status") as string,
       description: formData.get("description") as string,
       author: formData.get("author") as string,
+      client: formData.get("client") as string || undefined,
       url: formData.get("url") as string,
       tags: (formData.get("tags") as string)
         .split(",")
@@ -99,10 +115,25 @@ export default function NewContentPage() {
           <Textarea id="description" name="description" rows={3} />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div>
             <Label htmlFor="author">Author</Label>
             <Input id="author" name="author" />
+          </div>
+
+          <div>
+            <Label htmlFor="client">Client</Label>
+            <Input
+              id="client"
+              name="client"
+              list="client-options"
+              placeholder="Select or type client name"
+            />
+            <datalist id="client-options">
+              {clients.map((client) => (
+                <option key={client} value={client} />
+              ))}
+            </datalist>
           </div>
 
           <div>

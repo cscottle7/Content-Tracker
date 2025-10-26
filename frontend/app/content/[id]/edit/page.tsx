@@ -14,6 +14,7 @@ export default function ContentEditPage({ params }: { params: { id: string } }) 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [clients, setClients] = useState<string[]>([])
   const router = useRouter()
 
   useEffect(() => {
@@ -28,7 +29,18 @@ export default function ContentEditPage({ params }: { params: { id: string } }) 
       }
     }
 
+    async function fetchClients() {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/search/filters`)
+        const data = await response.json()
+        setClients(data.clients || [])
+      } catch (err) {
+        console.error("Failed to fetch clients:", err)
+      }
+    }
+
     fetchContent()
+    fetchClients()
   }, [params.id])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -138,7 +150,7 @@ export default function ContentEditPage({ params }: { params: { id: string } }) 
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div>
             <Label htmlFor="author">Author</Label>
             <Input
@@ -146,6 +158,22 @@ export default function ContentEditPage({ params }: { params: { id: string } }) 
               value={content.author || ""}
               onChange={(e) => setContent({ ...content, author: e.target.value })}
             />
+          </div>
+
+          <div>
+            <Label htmlFor="client">Client</Label>
+            <Input
+              id="client"
+              value={content.client || ""}
+              onChange={(e) => setContent({ ...content, client: e.target.value })}
+              list="client-options"
+              placeholder="Select or type client name"
+            />
+            <datalist id="client-options">
+              {clients.map((client) => (
+                <option key={client} value={client} />
+              ))}
+            </datalist>
           </div>
 
           <div>

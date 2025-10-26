@@ -41,9 +41,9 @@ def index_content_item(content: ContentResponse) -> None:
         cursor.execute("""
             INSERT OR REPLACE INTO content_items (
                 id, file_path, title, content_type, status, created_date, updated_date,
-                publish_date, author, url, description, categories_json, tags_json,
+                publish_date, author, client, url, description, categories_json, tags_json,
                 custom_fields_json, last_indexed
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
         """, (
             content.id,
             content.file_path,
@@ -54,6 +54,7 @@ def index_content_item(content: ContentResponse) -> None:
             content.updated_date.isoformat() if isinstance(content.updated_date, date) else content.updated_date,
             content.publish_date.isoformat() if content.publish_date and isinstance(content.publish_date, date) else content.publish_date,
             content.author,
+            content.client,
             content.url,
             content.description,
             json.dumps(content.categories),
@@ -158,9 +159,9 @@ def search_content(
             params.extend([f'%"{tag}"%' for tag in tags])
 
         if client:
-            sql += " AND custom_fields_json LIKE ?"
-            count_sql += " AND custom_fields_json LIKE ?"
-            params.append(f'%"client": "{client}"%')
+            sql += " AND client = ?"
+            count_sql += " AND client = ?"
+            params.append(client)
 
         if date_from:
             sql += " AND created_date >= ?"
@@ -195,6 +196,7 @@ def search_content(
                     updated_date=date.fromisoformat(row['updated_date']) if row['updated_date'] else date.today(),
                     publish_date=date.fromisoformat(row['publish_date']) if row['publish_date'] else None,
                     author=row['author'],
+                    client=row['client'],
                     url=row['url'],
                     description=row['description'],
                     categories=json.loads(row['categories_json']) if row['categories_json'] else [],
@@ -266,21 +268,9 @@ def get_unique_values(field: str) -> List[str]:
     cursor = conn.cursor()
 
     try:
-        if field in ['content_type', 'status', 'author']:
+        if field in ['content_type', 'status', 'author', 'client']:
             cursor.execute(f"SELECT DISTINCT {field} FROM content_items WHERE {field} IS NOT NULL ORDER BY {field}")
             return [row[0] for row in cursor.fetchall()]
-        elif field == 'client':
-            # Extract unique clients from custom_fields_json
-            cursor.execute("SELECT DISTINCT custom_fields_json FROM content_items WHERE custom_fields_json IS NOT NULL")
-            clients = set()
-            for row in cursor.fetchall():
-                try:
-                    custom_fields = json.loads(row[0])
-                    if 'client' in custom_fields:
-                        clients.add(custom_fields['client'])
-                except:
-                    continue
-            return sorted(list(clients))
         else:
             return []
     finally:

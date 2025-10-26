@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -11,6 +12,20 @@ const STATUSES = ["draft", "published", "archived"]
 export function FilterPanel() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [clients, setClients] = useState<string[]>([])
+
+  useEffect(() => {
+    async function fetchClients() {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/search/filters`)
+        const data = await response.json()
+        setClients(data.clients || [])
+      } catch (err) {
+        console.error("Failed to fetch clients:", err)
+      }
+    }
+    fetchClients()
+  }, [])
 
   function updateFilter(key: string, value: string | null) {
     const params = new URLSearchParams(searchParams.toString())
@@ -101,6 +116,25 @@ export function FilterPanel() {
             {STATUSES.map((status) => (
               <option key={status} value={status}>
                 {status.charAt(0).toUpperCase() + status.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <Label htmlFor="client" className="text-sm font-medium mb-2 block">
+            Client
+          </Label>
+          <select
+            id="client"
+            value={searchParams.get("client") || ""}
+            onChange={(e) => updateFilter("client", e.target.value || null)}
+            className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+          >
+            <option value="">All clients</option>
+            {clients.map((client) => (
+              <option key={client} value={client}>
+                {client}
               </option>
             ))}
           </select>

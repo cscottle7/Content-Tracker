@@ -21,6 +21,7 @@ class ContentBase(BaseModel):
     author: Optional[str] = Field(None, max_length=200)
     url: Optional[str] = Field(None, max_length=1000)
     publish_date: Optional[date] = None
+    client: Optional[str] = Field(None, max_length=200, description="Client name for multi-client organization")
     categories: List[str] = Field(default_factory=list)
     tags: List[str] = Field(default_factory=list)
     custom_fields: Dict[str, Any] = Field(default_factory=dict)
@@ -45,6 +46,7 @@ class ContentUpdate(BaseModel):
     author: Optional[str] = Field(None, max_length=200)
     url: Optional[str] = Field(None, max_length=1000)
     publish_date: Optional[date] = None
+    client: Optional[str] = Field(None, max_length=200)
     categories: Optional[List[str]] = None
     tags: Optional[List[str]] = None
     custom_fields: Optional[Dict[str, Any]] = None
@@ -80,6 +82,7 @@ class ContentFilter(BaseModel):
     content_type: Optional[str] = None
     status: Optional[str] = None
     author: Optional[str] = None
+    client: Optional[str] = None
     category: Optional[str] = None
     tag: Optional[str] = None
     start_date: Optional[date] = None
