@@ -23,8 +23,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
     """
     # Startup: Initialize database
     await init_database()
-    print(f"✓ Database initialized at {settings.DATABASE_URL}")
-    print(f"✓ Content library path: {settings.CONTENT_LIBRARY_PATH}")
+    print(f"[OK] Database initialized at {settings.DATABASE_URL}")
+    print(f"[OK] Content library path: {settings.CONTENT_LIBRARY_PATH}")
 
     yield
 
@@ -71,13 +71,13 @@ async def health_check():
 
 
 # Register routers
-from app.routers import content, search, auth
+from app.routers import content, search, auth, export
 
 app.include_router(auth.router)
 app.include_router(content.router)
 app.include_router(search.router)
+app.include_router(export.router)
 
 # TODO: Register additional routers when implemented
-# from app.routers import export, planning
-# app.include_router(export.router)
+# from app.routers import planning
 # app.include_router(planning.router)

@@ -40,12 +40,15 @@ def test_settings(temp_dir: Path) -> Settings:
 @pytest.fixture
 def client(test_settings: Settings, monkeypatch) -> Generator[TestClient, None, None]:
     """Create a test client for FastAPI application."""
-    # Override settings module for tests
+    # Override settings module for tests - must be done BEFORE importing init_db
     monkeypatch.setattr("app.config.settings", test_settings)
     monkeypatch.setattr("app.services.markdown_service.settings", test_settings)
     monkeypatch.setattr("app.services.search_service.settings", test_settings)
+    monkeypatch.setattr("app.services.export_service.settings", test_settings)
+    monkeypatch.setattr("app.services.auth_service.settings", test_settings)
+    monkeypatch.setattr("app.db.init_db.settings", test_settings)
 
-    # Initialize test database
+    # Initialize test database (after settings are patched)
     from app.db.init_db import create_content_index_db, create_users_db
     create_content_index_db()
     create_users_db()
